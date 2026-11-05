@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="AI Tech Radar 前沿技术情报日报，按日期和技术方向累计可检索档案。">
-<title>AI Tech Radar | 2026-11-03</title>
+<title>AI Tech Radar | 2026-11-05</title>
 <style>
 :root{color-scheme:dark;--bg:#090e19;--panel:#121b2c;--line:#293a53;--text:#eaf3ff;--muted:#a2b4cb;--accent:#7db5ff;--mint:#59d6b6}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 10% 0,#192d4a,transparent 45%),radial-gradient(ellipse at 100% 0,#12362e,transparent 35%),var(--bg);font:15px/1.7 system-ui,-apple-system,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif;color:var(--text)}
@@ -28,7 +28,7 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
 <!-- RADAR_DATA_BEGIN: preserve existing entry IDs and issue IDs when updating -->
 <script id="radar-data" type="application/json">{
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T18:04:00+08:00",
+  "updatedAt": "2026-11-05T17:55:00+08:00",
   "issues": [
     {
       "id": "2026-10-25",
@@ -178,6 +178,19 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
       ],
       "trend": "工程 Agent 开始覆盖 CAD/PCB/仿真与物理制造闭环；推理性能优化则越来越依赖具体 GPU、矩阵形状和长上下文分块策略。前者需要工程验收，后者必须用真实服务指标复测。",
       "study": "优先研究工程 Agent 的 CAD→仿真→制造验收闭环；并用 MiniMax MXFP8 Tile 调优案例区分算子微基准和真实推理 TPOT/吞吐收益。"
+    },
+    {
+      "id": "2026-11-05",
+      "date": "2026-11-05",
+      "window": "2026-11-04 18:00 至 2026-11-05 17:55（北京时间）；三项 11 月 4 日发布均未公开精确小时，是否完全落入严格 24 小时窗口无法确认。",
+      "summary": "本期 3 条：S 级 1 条、A 级 2 条。以官方技术资料及可信媒体交叉核对；未确认小时级发布时间的项目明确标注。",
+      "highlights": [
+        "S｜OpenAI 发布 Linux 内核自动安全研究流水线：2,308 个候选、1,724 个动态复现、948 个独立 LPE 对应候选补丁；约 121.3 万美元 API 费用，均为官方数据。",
+        "A｜腾讯发布 Hy4，扩展视觉与计算机操作，并强调训练数据安全控制；权重与独立评测仍待核实。",
+        "A｜OpenAI 发布 Images 2.6：Flare/Sunburst、可控编辑与 GIF，官方报告平均生成提速 50%，暂无独立验证。"
+      ],
+      "trend": "前沿 Agent 的重点正从单次生成转向可验证的多阶段工作流：安全研究需动态证据和人工审批，计算机操作需要视觉与权限边界，创作模型则强调多轮编辑一致性。三者成熟度与可复现性差异显著。",
+      "study": "优先精读 OpenAI 内核研究的 Scout→Analyst→动态验证→候选补丁→人工审查流程，特别检查候选数、动态复现数、独立漏洞数、上游已合并补丁数的口径差异。"
     }
   ],
   "entries": [
@@ -1813,7 +1826,7 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
       "evidence": [
         {
           "type": "PR 作者测试",
-          "text": "提交者报告 CPU 单元测试覆盖布局合法性、PP 阶段 HBM 瓶颈、KV 容量钳制及 <50ms 的临界点扫描。"
+          "text": "提交者报告 CPU 单元测试覆盖布局合法性、PP 阶段 HBM 瓶颈、KV 容量钳制及 \u003c50ms 的临界点扫描。"
         },
         {
           "type": "状态",
@@ -2197,6 +2210,137 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
         {
           "title": "vLLM PR #65524",
           "url": "https://github.com/vllm-project/vllm/pull/65524"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-04-openai-linux-kernel-autonomous-security-pipeline",
+      "date": "2026-11-04",
+      "published": "2026-11-04（官方公告日期；具体小时未核实）",
+      "priority": "S",
+      "organization": "OpenAI",
+      "title": "Linux 内核自动漏洞研究流水线：从候选发现、动态验证到补丁审查",
+      "topics": [
+        "Agent",
+        "Coding Agent",
+        "AI 安全",
+        "AI 工程基础设施"
+      ],
+      "summary": "OpenAI 公开自动化内核安全研究实验：扫描 2,308 项去重候选，动态复现 1,724 项，形成 948 个独立本地提权漏洞对应补丁；一次运行 API 费用约 121.3 万美元。以上是官方研究数据，并非 948 个补丁全部已被 Linux 上游接受。",
+      "problem": "大规模代码审计的瓶颈不仅是发现疑似问题，更是消除误报、复现影响、判断严重性和形成可审查修复。",
+      "technical": "采用 Scout 选择可达审计目标、Analyst 分析候选、隔离虚拟机/KASAN 动态复现、受控环境评估影响、生成候选补丁，最后由人工研究者复核并向维护者报告。输出包含根因分析、复现证据与补丁。此处不提供漏洞利用操作细节。",
+      "innovations": [
+        "将发现、动态证据、影响分级和修复纳入连续可追踪的 Agent 流水线。",
+        "以独立复现和人工复核约束自动化系统，而非仅信任模型文字判断。",
+        "报告每阶段 API 成本，揭示验证和后续处理的主要成本。"
+      ],
+      "comparison": "相较静态扫描工具仅报告疑似问题，该流程增加真实环境验证与补丁候选；相较人工逐项审计，可批量处理，但需要高额算力、隔离环境和维护者审查。",
+      "evidence": [
+        {
+          "type": "厂商研究数据",
+          "text": "2,308 候选、1,724 动态复现、948 个独立 LPE 漏洞补丁，API 成本 $1,213,430；并非全部已合并修复。"
+        },
+        {
+          "type": "局限核对",
+          "text": "文章披露早期有 20 次成功提权使用了非指定漏洞，后续增加独立路径检查，说明只验收结果会误判。"
+        }
+      ],
+      "limitations": [
+        "数据主要来自 OpenAI 自述，未见对 948 项逐一公开的独立核验。",
+        "候选补丁仍需维护者审查；实验使用受控虚拟机环境，不能直接外推到全部生产系统。",
+        "安全研究具有双用途风险，公开材料省略部分技术细节。"
+      ],
+      "recommendation": "S 级重点学习 Agent 证据链、隔离执行、去重、漏洞变体检查和人工审批；设计安全的玩具程序验证流水线，不触碰未经授权的系统。",
+      "sources": [
+        {
+          "title": "OpenAI 原始研究（2026-11-04）",
+          "url": "https://openai.com/index/a-thousand-fewer-paths-to-root/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-04-tencent-hy4-agent-model-release",
+      "date": "2026-11-04",
+      "published": "2026-11-04（报道日期；小时级待核）",
+      "priority": "A",
+      "organization": "Tencent Hunyuan",
+      "title": "腾讯 Hy4：加入视觉理解和计算机操作能力的前沿模型",
+      "topics": [
+        "新模型与架构",
+        "Agent",
+        "计算机操作",
+        "多模态",
+        "AI 安全"
+      ],
+      "summary": "腾讯发布 Hy4，报道指出相比 Hy4 Preview 扩展视觉理解、工具调用和计算机操作；官方强调限制进攻性网络安全训练材料。权重计划发布，不能当作已经开源。",
+      "problem": "长程任务需要模型将视觉环境、工具调用和操作规划统一处理，同时控制双用途安全风险。",
+      "technical": "根据发布报道，Hy4 具备视觉感知、推理和工具使用的 Agent 能力，并通过安全数据筛选限制部分高风险网络攻击训练内容；尚缺足够公开技术细节验证具体架构。",
+      "innovations": [
+        "将计算机操作加入原有模型能力谱系。",
+        "发布方强调训练阶段的网络安全数据控制。"
+      ],
+      "comparison": "与此前 Hy4 Preview 相比，本次重点是视觉及电脑操作扩展；与 Kimi 的训练数据安全控制属于类似方向，但尚无法比较实际效果。",
+      "evidence": [
+        {
+          "type": "第三方新闻报道",
+          "text": "SiliconANGLE 2026-11-04 报道 Hy4 新增 computer-use 能力。"
+        },
+        {
+          "type": "媒体转述厂商测试",
+          "text": "Reuters 2026-11-04 报道安全训练材料限制；相关安全效果来自腾讯内部测试，非独立评测。"
+        }
+      ],
+      "limitations": [
+        "模型权重和完整安全报告仍待公开，尚不能独立复现。",
+        "缺少可审计的跨模型 Computer Use 基准与成本数据。"
+      ],
+      "recommendation": "A 级跟踪正式模型卡、权重、计算机操作评测和安全数据消融；暂不把厂商安全声明视为验证结论。",
+      "sources": [
+        {
+          "title": "SiliconANGLE 发布报道",
+          "url": "https://siliconangle.com/2026/11/04/tencent-releases-hy4-powerful-frontier-llm-introducing-visual-understanding-and-computer-use/"
+        },
+        {
+          "title": "Reuters 安全训练报道",
+          "url": "https://www.reuters.com/legal/litigation/tencent-rolls-out-ai-model-trained-with-limited-cybersecurity-data-amid-hacking-2026-11-04/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-04-openai-images26-flare-sunburst-editing",
+      "date": "2026-11-04",
+      "published": "2026-11-04（官方日期；小时级待核）",
+      "priority": "A",
+      "organization": "OpenAI",
+      "title": "Images 2.6：图像生成提速、可控编辑与 GIF 动画输出",
+      "topics": [
+        "新模型与架构",
+        "多模态",
+        "AI 工程基础设施"
+      ],
+      "summary": "OpenAI 发布 Images 2.6，API 提供 Flare 与 Sunburst 两档；官方称平均生成速度较此前提高 50%，并加入图像标注编辑、SVG 导出、complexity 参数和 GIF 工作流。性能为厂商数据。",
+      "problem": "创作工作流需要低延迟迭代、稳定的角色/品牌一致性及精确局部修改，而非每次重新生成。",
+      "technical": "Flare 偏向快速生成，Sunburst 偏向质量和跨轮一致性；API 的 complexity 控制规划复杂度，与图像质量设置区分；可结合标注编辑和 SVG 导出。",
+      "innovations": [
+        "按延迟/质量提供不同 API 选项。",
+        "将可控局部修改和动画工作流纳入图像模型服务。"
+      ],
+      "comparison": "与只返回静态位图的生成服务相比，强调可编辑工作流和 GIF；尚未证明所有复杂场景一致性都改善。",
+      "evidence": [
+        {
+          "type": "官方发布",
+          "text": "2026-11-04 发布；官方称平均生成快 50%，低质量 Flare 最快约 6 秒。"
+        }
+      ],
+      "limitations": [
+        "无独立统一基准，50% 为厂商平均口径。",
+        "GIF 的时序一致性、SVG 质量与复杂编辑仍需实际测试。"
+      ],
+      "recommendation": "A 级建议对相同图像编辑任务比较成功率、延迟、角色一致性、重试次数和成本。",
+      "sources": [
+        {
+          "title": "OpenAI Images 2.6 官方发布",
+          "url": "https://openai.com/index/introducing-images-2-6/"
         }
       ]
     }
