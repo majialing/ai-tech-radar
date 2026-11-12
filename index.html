@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="AI Tech Radar 前沿技术情报日报，按日期和技术方向累计可检索档案。">
-<title>AI Tech Radar | 2026-11-11</title>
+<title>AI Tech Radar | 2026-11-12</title>
 <style>
 :root{color-scheme:dark;--bg:#090e19;--panel:#121b2c;--line:#293a53;--text:#eaf3ff;--muted:#a2b4cb;--accent:#7db5ff;--mint:#59d6b6}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 10% 0,#192d4a,transparent 45%),radial-gradient(ellipse at 100% 0,#12362e,transparent 35%),var(--bg);font:15px/1.7 system-ui,-apple-system,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif;color:var(--text)}
@@ -28,7 +28,7 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
 <!-- RADAR_DATA_BEGIN: preserve existing entry IDs and issue IDs when updating -->
 <script id="radar-data" type="application/json">{
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T18:00:00+08:00",
+  "updatedAt": "2026-11-12T18:04:00+08:00",
   "issues": [
     {
       "id": "2026-10-25",
@@ -262,6 +262,19 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
       ],
       "trend": "Agent 前沿竞争同时转向长程执行能力、可机器验证的正确性与模型供应链完整性；应区分厂商评测、数学证明覆盖范围和真实部署安全。",
       "study": "优先读 AlphaProof Code 的技术论文和验证信任边界，再对 Carbon 进行任务级成本对照；对开放权重 Agent 建立 hash、来源签名、权限隔离与执行审计。"
+    },
+    {
+      "id": "2026-11-12",
+      "date": "2026-11-12",
+      "window": "2026-11-11 18:00 至 2026-11-12 18:04（北京时间）；GitHub 仅展示创建日期，精确小时未全部确认。",
+      "summary": "本期新增 A 级 2 条、B 级 1 条。重点为混合 Mamba 推测解码的精确状态恢复、稀疏注意力确定性及 BF16 MoE 性能优化；没有证据足以评 S。",
+      "highlights": [
+        "A｜vLLM #67045：混合 Mamba 模型在推测解码和前缀缓存下恢复精确循环状态，作者报告 17/17 场景命中。",
+        "A｜vLLM #67044：稀疏注意力 top-k 的确定性选择和排序，解决并行调度与同分 tie 导致的跨 rank 分歧。",
+        "B｜vLLM #67040：GLM-5.3 BF16 MegaMoE 合并，作者单节点 B200 测试报告 prefill +40.3%、decode +13.6%。"
+      ],
+      "trend": "推理系统的优化焦点从单算子速度扩展到混合架构状态正确性、跨 rank 可复现性与按权重精度选择融合内核；PR 基准不可直接泛化为生产效果。",
+      "study": "优先阅读 #67045 的推测接受列与 Mamba 状态对齐；对 #67044 构造 tied top-k 跨 rank 测试；对 #67040 重复端到端基准并记录显存、TTFT、TPOT。"
     }
   ],
   "entries": [
@@ -2879,6 +2892,118 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
         {
           "title": "Artificial Analysis MKA",
           "url": "https://artificialanalysis.ai/"
+        }
+      ]
+    },
+    {
+      "id": "github-vllm-vllm-pr-67045",
+      "date": "2026-11-11",
+      "published": "2026-11-11（GitHub PR 创建日期；小时未核实）",
+      "organization": "vLLM 社区",
+      "title": "混合 Mamba 模型在推测解码下精确恢复前缀缓存状态",
+      "priority": "A",
+      "topics": [
+        "推理优化",
+        "Agent",
+        "AI工程基础设施"
+      ],
+      "summary": "Draft PR #67045 为 Mamba/注意力混合模型的推测解码处理停止位置与在途调度造成的循环状态偏移，避免续写时回退到缓存块边界。",
+      "problem": "推测解码每步可写入多个候选状态，停止位置可能落在被接受草稿中，导致缓存前沿与真实最后 token 不一致。",
+      "technical": "可选截断采样接受位置；调度器记录最后完成的步骤和 draft 列，必要时在 GPU 上把目标循环状态折叠到首列；无法精确定位时不发布缓存前沿。",
+      "innovations": [
+        "把停止规则与 GPU 循环状态对齐。",
+        "处理异步在途 step 与多 draft 列状态。"
+      ],
+      "comparison": "与仅在块边界恢复的现有路径相比，可更精确复用混合架构长对话前缀。",
+      "evidence": [
+        {
+          "type": "PR 作者实测",
+          "text": "GLM-5.3-Flash 单 H200、3 个 draft token 的 17/17 个场景命中精确前沿；32 段 Coding Agent 轨迹中位未缓存 prompt token 从 3755 降至 769（指定较大缓存配置）。"
+        }
+      ],
+      "limitations": [
+        "Draft PR，依赖其他未合并修改；尚非正式发布。",
+        "需启用特殊开关，限制 PP=1、无 KV connector，未给出通用端到端吞吐结论。"
+      ],
+      "recommendation": "研究 speculative acceptance 与 recurrent state 的关系，复现 stop-token、EOS 和 in-flight step 边界条件。",
+      "sources": [
+        {
+          "title": "vLLM PR #67045",
+          "url": "https://github.com/vllm-project/vllm/pull/67045"
+        }
+      ]
+    },
+    {
+      "id": "github-vllm-vllm-pr-67044",
+      "date": "2026-11-11",
+      "published": "2026-11-11（GitHub PR 创建日期；小时未核实）",
+      "organization": "vLLM 社区",
+      "title": "稀疏注意力 Top-K 规范化：消除 tied scores 的非确定性",
+      "priority": "A",
+      "topics": [
+        "推理优化",
+        "AI工程基础设施"
+      ],
+      "summary": "Draft PR #67044 增加可选的确定性稀疏索引 top-k 后处理，让选中的索引集合和顺序不依赖 atomicAdd 的线程调度。",
+      "problem": "同分候选争夺 k-th 位置时，原有 atomicAdd 路径会选择不同索引，跨 TP rank 的稀疏注意力结果和后续状态可能分叉。",
+      "technical": "使用与内核一致的分数排序键保留高于阈值者，同分时按最低索引选择，再按索引升序输出；可通过 VLLM_DETERMINISTIC_SPARSE_TOPK 启用。",
+      "innovations": [
+        "同时规范化 tied top-k 的集合和顺序。",
+        "覆盖多种 decode backend 和部分 prefill 路径。"
+      ],
+      "comparison": "比仅对已选索引排序更强，因为后者无法消除 tied set 的不同选择。",
+      "evidence": [
+        {
+          "type": "PR 作者跨 rank 探针",
+          "text": "作者报告 DeepSeek-V4.1 TP4 在指定 B200 测试中 132k 次调用有 111k 次 tied-set 差异；这不是最终模型准确率。"
+        }
+      ],
+      "limitations": [
+        "Draft PR，尚未合并；规范化后处理有潜在开销。",
+        "融合 prefill top-k 与近似 DeepSelect 路径在该开关下被禁用。"
+      ],
+      "recommendation": "构造相同分数、NaN 和正负零用例，比较跨 rank 输出一致性及额外延迟。",
+      "sources": [
+        {
+          "title": "vLLM PR #67044",
+          "url": "https://github.com/vllm-project/vllm/pull/67044"
+        }
+      ]
+    },
+    {
+      "id": "github-vllm-vllm-pr-67040",
+      "date": "2026-11-11",
+      "published": "2026-11-11 创建，2026-11-12 合并（GitHub 日期）",
+      "organization": "vLLM 社区",
+      "title": "GLM-5.3 BF16 MegaMoE 接入 DeepGEMM",
+      "priority": "B",
+      "topics": [
+        "推理优化",
+        "AI工程基础设施",
+        "开源模型"
+      ],
+      "summary": "已合并 PR #67040 为 GLM-5.3 未量化 BF16 权重增加 DeepGEMM bf16×bf16 MegaMoE 路径，融合共享专家。",
+      "problem": "原 MegaMoE 路径主要支持 block-FP8 权重，BF16 checkpoint 无法使用对应融合内核。",
+      "technical": "新增 MEGA_MOE_BF16 选择，在 TP1+DP/EP 部署下通过 moe_backend=deep_gemm_mega_moe 启用。",
+      "innovations": [
+        "BF16 权重无需转成 block-FP8 即可运行融合 MegaMoE。"
+      ],
+      "comparison": "作者与默认 FlashInfer TRTLLM BF16 MoE 路径对照。",
+      "evidence": [
+        {
+          "type": "PR 作者单次服务基准",
+          "text": "8×B200、DEP8、并发 128：8192/1 prefill 总吞吐 134903→189329 tok/s（+40.3%）；1024/1024 decode 输出吞吐 6357→7221 tok/s（+13.6%）。"
+        }
+      ],
+      "limitations": [
+        "每种工作负载仅单次运行，未提供跨机器独立复现。",
+        "特定 GLM-5.3 BF16 与部署拓扑，不能泛化到其他模型或量化精度。"
+      ],
+      "recommendation": "对照相同硬件和负载复测吞吐、TTFT、TPOT 及 GSM8K 正确性。",
+      "sources": [
+        {
+          "title": "vLLM PR #67040",
+          "url": "https://github.com/vllm-project/vllm/pull/67040"
         }
       ]
     }
