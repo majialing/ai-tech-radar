@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="AI Tech Radar 前沿技术情报日报，按日期和技术方向累计可检索档案。">
-<title>AI Tech Radar | 2026-11-17</title>
+<title>AI Tech Radar | 2026-11-18</title>
 <style>
 :root{color-scheme:dark;--bg:#090e19;--panel:#121b2c;--line:#293a53;--text:#eaf3ff;--muted:#a2b4cb;--accent:#7db5ff;--mint:#59d6b6}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 10% 0,#192d4a,transparent 45%),radial-gradient(ellipse at 100% 0,#12362e,transparent 35%),var(--bg);font:15px/1.7 system-ui,-apple-system,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif;color:var(--text)}
@@ -28,7 +28,7 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
 <!-- RADAR_DATA_BEGIN: preserve existing entry IDs and issue IDs when updating -->
 <script id="radar-data" type="application/json">{
   "schemaVersion": 1,
-  "updatedAt": "2026-11-17T17:56:00+08:00",
+  "updatedAt": "2026-11-18T17:55:00+08:00",
   "issues": [
     {
       "id": "2026-10-25",
@@ -335,6 +335,18 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
       ],
       "trend": "模型竞争从单纯扩大参数转向稀疏激活、查表记忆、KV 缓存压缩与 Agent 每任务成本；正式 API 可用性与可复现的任务能力应分开评估。",
       "study": "重点比较 Qwen4-Max 正式版与 Hy4 flash 在同一 Agent harness 下的任务成功率、Token 消耗、TTFT、端到端时延、缓存命中和真实成本；阅读 Engram/LatentMoE 与混合注意力设计。"
+    },
+    {
+      "id": "2026-11-18",
+      "date": "2026-11-18",
+      "window": "北京时间 2026-11-17 18:00 至 2026-11-18 17:55；OpenAI 11月17日官方公告日期可确认，小时级未核实；GPT-6.2 公告为11月18日，小时级未核实。",
+      "summary": "OpenAI GPT-6.2 Astra/Sol 发布，重点是复杂专业工作、Coding Agent、计算机操作与按任务成本；Astra for Law 更新，体现领域搜索索引和专用配置的增益。",
+      "highlights": [
+        "S｜GPT-6.2 Astra/Sol：官方称 Agents’ Last Exam 上 Astra 比 GPT-6 Astra 高5.2分，任务成本低于三分之一；Sol 在 FrontierCode 2.0 与 Astra 差0.5分、成本约五分之一。",
+        "A｜Astra for Law 6.2：专用法律搜索索引与指令配置，在 LAB-AA 120项任务上完全通过率20.8%，基础 Astra 为15.0%。"
+      ],
+      "trend": "模型升级正从单纯基准分数转向长程专业任务的质量、Token效率、工具操作和可审计的领域检索；领域配置的价值须与底座能力分开测量。",
+      "study": "用相同的真实代码仓库与专业文档任务比较 Astra/Sol 的完成率、人工修改次数、输出 Token、费用；对领域 Agent 做索引/指令消融实验。"
     }
   ],
   "entries": [
@@ -3447,6 +3459,82 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
         {
           "title": "Vercel AI Gateway 2026-11-16 接入公告",
           "url": "https://vercel.com/changelog/hy4-flash-now-available-on-ai-gateway-for-50-off"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-18-openai-gpt-6-2-astra-sol",
+      "date": "2026-11-18",
+      "published": "2026-11-18（官方网页当日发布；具体北京时间小时未核实）",
+      "organization": "OpenAI",
+      "title": "GPT-6.2 Astra 与 Sol：专业任务、Coding Agent 和计算机操作的质量/成本协同",
+      "priority": "S",
+      "topics": [
+        "模型与架构",
+        "Agent与Coding Agent",
+        "计算机操作",
+        "推理训练优化"
+      ],
+      "summary": "OpenAI 推出 GPT-6.2 Astra 与 Sol，分别面向高难度专业任务与高效率通用工作；官方报告 Astra 在 Agents’ Last Exam 较 GPT-6 Astra 高5.2分、任务成本不到三分之一。",
+      "problem": "长程专业 Agent 需要在真实文档、代码仓库、CAD/网页界面中完成复杂交付，传统只看单次问答准确率难以衡量实际成本和可用性。",
+      "technical": "基于新的 GPT-6.2 模型系列，强化工具选择、计算机操作、视觉推理、代码修改和专业交付；官方未公开完整网络架构、训练数据与训练配方。Astra 主打最高任务质量，Sol 主打效率与成本。",
+      "innovations": [
+        "以真实长程任务的全通过率与任务费用共同衡量模型能力，而非仅按 Token 价格比较。",
+        "CAD/3D/网页交互及 Coding Agent 能力增强，面向真实软件和图形工具的操作。",
+        "安全评估增加 AI 自我改进高能力阈值与更强研究环境监督。"
+      ],
+      "comparison": "官方称 Astra 在 Agents’ Last Exam 较 GPT-6 Astra 高5.2分、成本不到1/3；Sol 在 Cognition FrontierCode 2.0 与 Astra 差0.5分但成本约1/5。不同 benchmark/harness 不可横向直接换算。",
+      "evidence": [
+        {
+          "type": "OpenAI 官方发布与自测",
+          "text": "2026-11-18 官方技术公告；包括 Agents’ Last Exam、FrontierCode、CAD/3D 及任务成本比较。"
+        }
+      ],
+      "limitations": [
+        "发布网页未明确小时级发布时间，严格24小时窗口仍有时间不确定性。",
+        "训练架构与数据细节未公开；多数跨代比较来自厂商公布的测试配置。",
+        "部分安全基准使用关闭安全分类器的测试条件，与真实 API 使用表现可能不同。"
+      ],
+      "recommendation": "选取可复现的真实 Coding Agent 与文档任务，记录成功率、人工返工、工具调用、输出 Token、延迟和总费用；分别对比 Astra 与 Sol。",
+      "sources": [
+        {
+          "title": "OpenAI GPT-6.2 Astra and Sol 官方公告",
+          "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-17-openai-astra-for-law-6-2",
+      "date": "2026-11-17",
+      "published": "2026-11-17（OpenAI 官方公告；小时级未核实）",
+      "organization": "OpenAI",
+      "title": "Astra for Law 6.2：法律搜索索引与领域指令增强的专业 Agent",
+      "priority": "A",
+      "topics": [
+        "Agent与Coding Agent",
+        "AI工程基础设施",
+        "模型与架构"
+      ],
+      "summary": "OpenAI 更新 Astra for Law 法律专用配置，结合 GPT-6.2 Astra、扩展搜索索引与法律研究指令；官方引用的 LAB-AA 120项任务完全通过率20.8%，基础 Astra 为15.0%。",
+      "problem": "法律任务要求完整检索权威材料并避免缺乏依据的断言，通用模型难以在全部评判条件上稳定通过。",
+      "technical": "将前沿基础模型与领域法律搜索索引、研究和权威性判断指令结合；法律索引扩展34%，覆盖超过3.1亿URL（厂商自述）。",
+      "comparison": "LAB-AA 完全通过率20.8%，GPT-6.2 Astra 15.0%，Muse Wonder Full 13.1%；不同法律任务和其他通用基准不可直接比较。",
+      "evidence": [
+        {
+          "type": "OpenAI 官方公告引用第三方评测",
+          "text": "Artificial Analysis LAB-AA 共120项法律任务；Vals 11月16日评测208题中112题完全通过。"
+        }
+      ],
+      "limitations": [
+        "法律领域结果不可外推至一般 Agent。",
+        "模型仍会产生错误，20.8%全通过率意味着多数复杂任务仍不满足所有条件。",
+        "访问需要 Enterprise Trusted Access，索引及提示词配置未完全开放。"
+      ],
+      "recommendation": "研究 RAG 检索索引、权威性排序和引用核验；在同一任务上对比基础模型与领域配置的增益和幻觉率。",
+      "sources": [
+        {
+          "title": "OpenAI Astra for Law 6.2 公告（2026-11-17）",
+          "url": "https://openai.com/index/astra-law-6-2/"
         }
       ]
     }
