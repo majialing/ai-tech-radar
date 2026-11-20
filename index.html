@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="AI Tech Radar 前沿技术情报日报，按日期和技术方向累计可检索档案。">
-<title>AI Tech Radar | 2026-11-19</title>
+<title>AI Tech Radar | 2026-11-20</title>
 <style>
 :root{color-scheme:dark;--bg:#090e19;--panel:#121b2c;--line:#293a53;--text:#eaf3ff;--muted:#a2b4cb;--accent:#7db5ff;--mint:#59d6b6}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 10% 0,#192d4a,transparent 45%),radial-gradient(ellipse at 100% 0,#12362e,transparent 35%),var(--bg);font:15px/1.7 system-ui,-apple-system,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif;color:var(--text)}
@@ -28,7 +28,7 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
 <!-- RADAR_DATA_BEGIN: preserve existing entry IDs and issue IDs when updating -->
 <script id="radar-data" type="application/json">{
   "schemaVersion": 1,
-  "updatedAt": "2026-11-19T18:03:00+08:00",
+  "updatedAt": "2026-11-20T18:00:47+08:00",
   "issues": [
     {
       "id": "2026-10-25",
@@ -360,6 +360,18 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
       ],
       "trend": "Agent 走向可验证的研发工程闭环，真实性能与安全控制同样重要。",
       "study": "研究 RTL 功能等价验证、Agent 任务级成功率与最小权限工具执行。"
+    },
+    {
+      "id": "2026-11-20",
+      "date": "2026-11-20",
+      "window": "北京时间2026-11-19 18:00至2026-11-20 18:00；GitHub创建日期已核实，小时级未核实。",
+      "summary": "Gemma 4 KV共享缓存RFC和SGLang工具调用解析正确性问题；无S级。",
+      "highlights": [
+        "A｜Gemma 4 KV缓存共享：作者原型降低显存占用，尚处RFC。",
+        "B｜SGLang非流式工具调用解析丢失普通文本。"
+      ],
+      "trend": "推理工程正关注架构感知的内存表示和Agent工具输出完整性。",
+      "study": "学习RoPE与K/V共享视图，建立流式/非流式解析一致性测试。"
     }
   ],
   "entries": [
@@ -1995,7 +2007,7 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
       "evidence": [
         {
           "type": "PR 作者测试",
-          "text": "提交者报告 CPU 单元测试覆盖布局合法性、PP 阶段 HBM 瓶颈、KV 容量钳制及 \u003c50ms 的临界点扫描。"
+          "text": "提交者报告 CPU 单元测试覆盖布局合法性、PP 阶段 HBM 瓶颈、KV 容量钳制及 <50ms 的临界点扫描。"
         },
         {
           "type": "状态",
@@ -3650,6 +3662,78 @@ header{border-bottom:1px solid var(--line);background:#090f1ad9}.head{padding:15
         {
           "title": "OpenAI 官方研究（2026-11-18）",
           "url": "https://openai.com/index/managing-frontier-ai-risk/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-19-vllm-gemma4-kv-sharing-rfc",
+      "date": "2026-11-19",
+      "published": "2026-11-19（GitHub 创建日期；小时未核实）",
+      "organization": "vLLM 社区",
+      "title": "Gemma 4 全局注意力 KV 共享缓存 RFC：每 Token 1024 值压缩至 640 值",
+      "priority": "A",
+      "topics": [
+        "新模型与架构",
+        "推理训练优化",
+        "AI工程基础设施"
+      ],
+      "summary": "社区提出利用 Gemma 4 全局层 K/V 未旋转维度重合，通过重叠视图减少37.5%全局层缓存值；作者原型32K/64K解码请求缓存占用改善1.338/1.404倍，尚未合并。",
+      "problem": "标准引擎重复缓存 Gemma 4 的部分 K/V 维度，造成长上下文显存浪费。",
+      "technical": "缓存布局为128维旋转K、384维共享未旋转值、128维旋转V，形成640值行；通过偏移视图复用原注意力核，配合RoPE查询重排及权重折叠。",
+      "comparison": "与现有仅去除重复V投影的方案不同，此提案压缩运行时缓存；理论全局层KV值数减少37.5%。",
+      "evidence": [
+        {
+          "type": "作者原型，未经独立复现",
+          "text": "A100 BF16 31B原型在32K/64K缓存占用降低1.338/1.404倍；32K固定批次吞吐约1.24倍。"
+        }
+      ],
+      "limitations": [
+        "开放RFC，未合并。",
+        "额外运行时变换使等批次eager步骤慢4%–9%；FP8与分页方案未完成。",
+        "小时级发布时间未核实。"
+      ],
+      "recommendation": "复现实数等价和BF16数值误差，比较显存、页碎片、长上下文吞吐及不同缓存后端。",
+      "sources": [
+        {
+          "title": "vLLM RFC #68778",
+          "url": "https://github.com/vllm-project/vllm/issues/68778"
+        },
+        {
+          "title": "原型代码",
+          "url": "https://github.com/Kushagrabainsla/gemma4-compact-kv"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-19-sglang-gemma4-nonstream-tool-text-loss",
+      "date": "2026-11-19",
+      "published": "2026-11-19（GitHub 创建日期；小时未核实）",
+      "organization": "SGLang 社区",
+      "title": "Gemma 4 非流式工具调用解析丢失中间及尾部助手文本",
+      "priority": "B",
+      "topics": [
+        "Agent与Coding Agent",
+        "AI工程基础设施"
+      ],
+      "summary": "社区最小复现表明 Gemma4Detector 非流式解析能找到两次工具调用，却丢失两次调用间及最后调用后的普通文本；流式路径正常。",
+      "problem": "工具调用与自然语言混合输出可能被截断，影响Agent可解释性及审计。",
+      "technical": "对比detect_and_parse与parse_streaming_increment对相同混合消息的处理，定位流式与非流式解析路径差异。",
+      "comparison": "非流式返回 First，流式保留 First then done，工具调用数量均为2。",
+      "evidence": [
+        {
+          "type": "社区问题报告，未独立复现",
+          "text": "Issue #51614在main@17a9168f1f提供CPU最小复现。"
+        }
+      ],
+      "limitations": [
+        "问题仍开放，未确认修复范围。",
+        "小时级发布时间未核实。"
+      ],
+      "recommendation": "为混合普通文本、多工具调用和流式等价性建立自动回归测试。",
+      "sources": [
+        {
+          "title": "SGLang Issue #51614",
+          "url": "https://github.com/sgl-project/sglang/issues/51614"
         }
       ]
     }
